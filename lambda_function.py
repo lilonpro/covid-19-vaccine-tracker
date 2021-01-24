@@ -1,6 +1,5 @@
 import json
 import requests
-import pandas as pd
 import requests
 import boto3
 import os
