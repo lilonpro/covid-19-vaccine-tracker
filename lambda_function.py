@@ -3,9 +3,10 @@ import requests
 import pandas as pd
 import requests
 import boto3
-
-data_url = "https://services5.arcgis.com/Rvw11bGpzJNE7apK/arcgis/rest/services/VaccinesPublic_gdb/FeatureServer/0/query?f=json&where=1=1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*&maxRecordCountFactor=4&outSR=102100&resultOffset=0&resultRecordCount=8000&cacheHint=true&quantizationParameters={%22mode%22:%22view%22,%22originPosition%22:%22upperLeft%22,%22tolerance%22:1.0583354500042335,%22extent%22:{%22xmin%22:-11864749.745014807,%22ymin%22:2986125.9341450464,%22xmax%22:-10435895.933896504,%22ymax%22:4355735.017881977,%22spatialReference%22:{%22wkid%22:102100,%22latestWkid%22:3857}}}"
-
+import os
+data_url = os.environ['DATA_URL']
+# "https://services5.arcgis.com/Rvw11bGpzJNE7apK/arcgis/rest/services/VaccinesPublic_gdb/FeatureServer/0/query?f=json&where=1=1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*&maxRecordCountFactor=4&outSR=102100&resultOffset=0&resultRecordCount=8000&cacheHint=true&quantizationParameters={%22mode%22:%22view%22,%22originPosition%22:%22upperLeft%22,%22tolerance%22:1.0583354500042335,%22extent%22:{%22xmin%22:-11864749.745014807,%22ymin%22:2986125.9341450464,%22xmax%22:-10435895.933896504,%22ymax%22:4355735.017881977,%22spatialReference%22:{%22wkid%22:102100,%22latestWkid%22:3857}}}"
+sns_arn = os.environ['SNS_ARN']
 sns_client = boto3.client('sns')
 def lambda_handler(event, context):
     # Pull data and get inventory info
@@ -26,7 +27,7 @@ def lambda_handler(event, context):
         inventory_data = df_in_stock_tops.to_dict('records')
         # send SNS
         response = client.publish(
-            TargetArn=arn,
+            TargetArn=sns_arn,
             Message=json.dumps(),
             MessageStructure='json'
         )
