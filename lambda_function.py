@@ -22,7 +22,7 @@ def lambda_handler(event, context):
     df_in_stock_tops = df_in_stock.head(5)
     df_in_stock_tops = df_in_stock.head(5)
     inventory_data = {}
-    if df_in_stock_tops.shape[0] > 0
+    if df_in_stock_tops.shape[0] > 0:
         # dump dataframe to dict
         inventory_data = df_in_stock_tops.to_dict('records')
         # send SNS
