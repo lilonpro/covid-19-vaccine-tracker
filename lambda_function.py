@@ -12,23 +12,13 @@ def lambda_handler(event, context):
     # Pull data and get inventory info
     data = requests.get(data_url).json()["features"]
     data_list = map(lambda item: item["attributes"], data)
-    # load data into dataframe
-    df = pd.DataFrame(data_list)
-    # fitler by total available
-    df_in_stock = df[df["Total_Available"] > 0]
-    # sort by inventory
-    df_in_stock = df_in_stock.sort_values("Total_Available", ascending=False)
-    # take top 5 inventory
-    df_in_stock_tops = df_in_stock.head(5)
-    df_in_stock_tops = df_in_stock.head(5)
-    inventory_data = {}
-    if df_in_stock_tops.shape[0] > 0:
-        # dump dataframe to dict
-        inventory_data = df_in_stock_tops.to_dict('records')
-        # send SNS
+    data_list_in_stock = list(filter(lambda x: x["Total_Available"] > 0, data_list)) 
+    data_list_in_stock.sort(key=lambda x:x["Total_Available"])
+    if len(data_list_in_stock) > 0:
+        # send SNS, note we are only sending top 5
         response = client.publish(
             TargetArn=sns_arn,
-            Message=json.dumps(),
+            Message=json.dumps(data_list_in_stock[0:5]),
             MessageStructure='json'
         )
 
