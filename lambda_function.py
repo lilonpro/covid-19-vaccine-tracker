@@ -15,13 +15,13 @@ def lambda_handler(event, context):
     data_list_in_stock.sort(key=lambda x:x["Total_Available"])
     if len(data_list_in_stock) > 0:
         # send SNS, note we are only sending top 5
-        response = client.publish(
+        response = sns_client.publish(
             TargetArn=sns_arn,
-            Message=json.dumps(data_list_in_stock[0:5]),
+            Message=json.dumps({"default": json.dumps(data_list_in_stock[0:5])}),
             MessageStructure='json'
         )
 
     return {
         'statusCode': 200,
-        'body': json.dumps(inventory_data)
+        'body': json.dumps(data_list_in_stock)
     }
