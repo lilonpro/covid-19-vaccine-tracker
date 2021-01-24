@@ -13,11 +13,31 @@ def lambda_handler(event, context):
     data_list = map(lambda item: item["attributes"], data)
     data_list_in_stock = list(filter(lambda x: x["Total_Available"] > 0, data_list)) 
     data_list_in_stock.sort(key=lambda x:x["Total_Available"])
+    msg = ""
+    for clinic in data_list_in_stock[0:5]:
+        clinic_info = f"""
+            {clinic["NAME"]}
+            --------------------
+            PublicPhone: {clinic["PublicPhone"]}
+            WEBSITE: {clinic['WEBSITE']}
+            Address: {clinic["STREET"]}, {clinic["CITY"]}, {clinic["COUNTY"]}, {clinic["ZIP"]}
+            PFIZER_AVAILABLE:    {clinic["PFIZER_AVAILABLE"]}
+            PFIZER_AVAILABLE2:   {clinic["PFIZER_AVAILABLE2"]}
+            MODERNA_AVAILABLE:   {clinic["MODERNA_AVAILABLE"]}
+            MODERNA_AVAILABLE:   {clinic["MODERNA_AVAILABLE2"]}
+            VACCINES_AVAILABLE:  {clinic["VACCINES_AVAILABLE"]}
+            PFIZER_AVAILABLE:    {clinic["PFIZER_AVAILABLE"]}
+            VACCINES_AVAILABLE2: {clinic["VACCINES_AVAILABLE2"]}
+            Total_Available:     {clinic["Total_Available"]}
+            Total_Shipped:       {clinic["Total_Shipped"]}
+            
+            """
+        msg = msg + clinic_info
     if len(data_list_in_stock) > 0:
         # send SNS, note we are only sending top 5
         response = sns_client.publish(
             TargetArn=sns_arn,
-            Message=json.dumps({"default": json.dumps(data_list_in_stock[0:5])}),
+            Message=json.dumps({"default": msg}),
             MessageStructure='json'
         )
 
