@@ -12,7 +12,7 @@ def lambda_handler(event, context):
     data = requests.get(data_url).json()["features"]
     data_list = map(lambda item: item["attributes"], data)
     data_list_in_stock = list(filter(lambda x: x["Total_Available"] > 0, data_list)) 
-    data_list_in_stock.sort(key=lambda x:x["Total_Available"])
+    data_list_in_stock.sort(key=lambda x:x["Total_Available"], reverse=True)
     msg = ""
     for clinic in data_list_in_stock[0:5]:
         clinic_info = f"""
